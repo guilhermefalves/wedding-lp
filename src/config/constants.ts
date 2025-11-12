@@ -8,6 +8,7 @@ export const colorPalette = [
 ];
 
 // Cronograma de eventos do casamento
+// TODO: definir cronograma
 export const timelineEvents = [
   {
     time: "16:30",
@@ -63,6 +64,7 @@ export const galleryImages = [
 ];
 
 // História do casal
+// TODO: definir texto 
 export const storyParagraphs = [
   "Nossa história começou de uma forma muito especial. Nos conhecemos em um momento inesperado da vida, quando menos esperávamos encontrar o amor verdadeiro.",
   "Desde o primeiro encontro, soubemos que havia algo especial entre nós. Os risos compartilhados, as conversas que se estendiam pela madrugada e a conexão instantânea que sentimos um pelo outro.",
