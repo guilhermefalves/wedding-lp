@@ -2,11 +2,9 @@ import { Camera, Heart, PartyPopper } from "lucide-react";
 
 // Paleta de cores do casamento
 export const colorPalette = [
-  { name: "Verde Oliva", color: "#6b7f39" },
+  { name: "Rosa", color: "#E39CB8" },
   { name: "Terracota", color: "#a0522d" },
-  { name: "Bege Suave", color: "#f5f4f1" },
   { name: "Marrom Claro", color: "#d2b48c" },
-  { name: "Verde Sage", color: "#9caf88" },
 ];
 
 // Cronograma de eventos do casamento
