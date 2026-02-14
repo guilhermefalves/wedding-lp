@@ -8,7 +8,6 @@ export const colorPalette = [
 ];
 
 // Cronograma de eventos do casamento
-// TODO: definir cronograma
 export const timelineEvents = [
   {
     time: "16:30",
@@ -23,7 +22,13 @@ export const timelineEvents = [
     icon: Heart,
   },
   {
-    time: "18:30",
+    time: "18:00",
+    title: "Mesa de frios e bar",
+    description: "Aperitivos e drinks especiais",
+    icon: PartyPopper,
+  },
+  {
+    time: "19:30",
     title: "Jantar",
     description: "Início da festa e comemoração",
     icon: PartyPopper,
@@ -41,6 +46,14 @@ export const weddingInfo = {
     address: "Rod. Marechal Rondon Km 332 Bauru - Agudos",
     mapsUrl: "https://maps.app.goo.gl/S1igY4rv3Y6f8oyNA",
   },
+};
+
+// Informações do RSVP
+export const rsvpInfo = {
+  contactName: "Angélica Moreno Eventos",
+  phone: "(14) 99842-4381",
+  whatsappLink: "https://wa.link/ft3fpp",
+  deadline: "10/03/2026",
 };
 
 // Informações dos noivos

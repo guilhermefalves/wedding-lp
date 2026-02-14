@@ -101,12 +101,17 @@ export function GiftsSection() {
               seguro.
             </p>
             <Button
+              asChild
               className="bg-accent-olive hover:bg-accent-olive-dark text-white"
-              onClick={() => window.open("#", "_blank")}
             >
-              Ver Lista Online
-              {/* TODO: Adicionar link :) */}
-              <ExternalLink className="w-4 h-4 ml-2" />
+              <a
+                href="https://www.finalfeliz.de/NoemyGuilherme"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Ver Lista Online
+                <ExternalLink className="w-4 h-4 ml-2" />
+              </a>
             </Button>
           </motion.div>
         </div>
