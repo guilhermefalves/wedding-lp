@@ -71,9 +71,8 @@ export const galleryImages = [
 ];
 
 // História do casal
-// TODO: definir texto 
 export const storyParagraphs = [
-  "Nossa história começou de uma forma muito especial. Nos conhecemos em um momento inesperado da vida, quando menos esperávamos encontrar o amor verdadeiro.",
+  "Nossa história é feita de momentos simples que se tornaram inesquecíveis. Desde o início, sabíamos que tinhamos encontrado algo raro e especial.",
   "Desde o primeiro encontro, soubemos que havia algo especial entre nós. Os risos compartilhados, as conversas que se estendiam pela madrugada e a conexão instantânea que sentimos um pelo outro.",
   "Ao longo dos anos, nossa relação cresceu e se fortaleceu. Passamos por diversos momentos juntos, sempre apoiando um ao outro e construindo nossos sonhos lado a lado.",
   "Hoje, estamos aqui para celebrar esse amor que nos une e iniciar uma nova jornada como marido e mulher. Queremos que vocês, nossos queridos familiares e amigos, sejam parte deste momento tão especial.",
