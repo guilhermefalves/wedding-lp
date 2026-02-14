@@ -66,7 +66,7 @@ export function RSVPSection() {
               <span>{rsvpInfo.phone}</span>
             </div>
             <p className="text-muted-foreground">
-              Até <span className="text-accent-olive font-medium">{rsvpInfo.deadline}</span>
+              Até <span className="text-accent-olive font-medium">{weddingInfo.confirmDate.toLocaleDateString("pt-BR", { day: "numeric", month: "long", year: "numeric" })}</span>
             </p>
           </motion.div>
 

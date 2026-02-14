@@ -37,7 +37,7 @@ export const timelineEvents = [
 
 // Informações do casamento
 export const weddingInfo = {
-  confirmDate: new Date("2026-02-17T00:00:00"),
+  confirmDate: new Date("2026-03-10T00:00:00"),
   weddingDate: new Date("2026-04-17T17:00:00"),
   ceremonyDate: new Date("2026-04-17T17:00:00"),
   partyDate: new Date("2026-04-17T19:00:00"),
