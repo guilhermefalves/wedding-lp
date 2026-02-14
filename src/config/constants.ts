@@ -19,19 +19,13 @@ export const timelineEvents = [
   {
     time: "17:00",
     title: "Cerimônia",
-    description: "Momento sagrado da união",
+    description: "A cerimônia de casamento",
     icon: Heart,
   },
   {
-    time: "17:45",
-    title: "Sessão de Fotos",
-    description: "Registrando momentos especiais",
-    icon: Camera,
-  },
-  {
-    time: "19:00",
-    title: "Coquetel",
-    description: "Início da festa e celebração",
+    time: "18:30",
+    title: "Jantar",
+    description: "Início da festa e comemoração",
     icon: PartyPopper,
   },
 ];
