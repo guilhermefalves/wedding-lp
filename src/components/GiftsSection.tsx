@@ -79,38 +79,9 @@ export function GiftsSection() {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="flex justify-center">
           <motion.div
-            className="bg-card border border-accent-olive/20 rounded-xl p-8 text-center shadow-sm"
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true, margin: "-50px" }}
-          >
-            <motion.div
-              initial={{ scale: 0 }}
-              whileInView={{ scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              viewport={{ once: true }}
-            >
-              <Gift className="w-10 h-10 text-accent-olive mx-auto mb-4" />
-            </motion.div>
-            <h3 className="text-xl mb-4">Lista Física</h3>
-            <p className="text-muted-foreground mb-6">
-              Itens selecionados para nossa nova casa, disponíveis na loja
-              física.
-            </p>
-            <Button
-              className="bg-accent-olive hover:bg-accent-olive-dark text-white"
-              onClick={() => window.open("#", "_blank")}
-            >
-              Ver Lista na Loja
-              <ExternalLink className="w-4 h-4 ml-2" />
-            </Button>
-          </motion.div>
-
-          <motion.div
-            className="bg-card border border-accent-olive/20 rounded-xl p-8 text-center shadow-sm"
+            className="bg-card border border-accent-olive/20 rounded-xl p-8 text-center shadow-sm w-full md:w-1/2"
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
@@ -130,27 +101,20 @@ export function GiftsSection() {
               seguro.
             </p>
             <Button
+              asChild
               className="bg-accent-olive hover:bg-accent-olive-dark text-white"
-              onClick={() => window.open("#", "_blank")}
             >
-              Ver Lista Online
-              <ExternalLink className="w-4 h-4 ml-2" />
+              <a
+                href="https://www.finalfeliz.de/NoemyGuilherme"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Ver Lista Online
+                <ExternalLink className="w-4 h-4 ml-2" />
+              </a>
             </Button>
           </motion.div>
         </div>
-
-        <motion.div
-          className="text-center mt-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          viewport={{ once: true }}
-        >
-          <p className="text-muted-foreground italic">
-            "O amor é a única força capaz de transformar um inimigo num amigo."
-            - Martin Luther King Jr.
-          </p>
-        </motion.div>
       </div>
     </section>
   );

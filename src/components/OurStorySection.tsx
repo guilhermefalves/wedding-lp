@@ -43,7 +43,7 @@ export function OurStorySection() {
               >
                 Como nos conhecemos
               </motion.h3>
-              <div className="space-y-4 text-muted-foreground leading-relaxed">
+              <div className="space-y-4 text-muted-foreground leading-relaxed" style={{ textAlign: "justify" }}>
                 {storyParagraphs.map((text, index) => (
                   <motion.p
                     key={`story-paragraph-${index}-${text.slice(0, 20)}`}

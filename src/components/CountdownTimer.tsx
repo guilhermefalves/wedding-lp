@@ -27,7 +27,7 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
         >
           <motion.div
             key={unit.value}
-            className="bg-accent-olive/10 border border-accent-olive/20 rounded-lg p-3 sm:p-4 mb-2 transition-transform duration-300"
+            className="bg-accent-olive/20 border border-accent-olive/20 rounded-lg p-3 sm:p-4 mb-2 transition-transform duration-300 text-white"
             animate={{
               scale: unit.label === "Segundos" ? [1, 1.05, 1] : 1,
             }}
@@ -38,7 +38,7 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
             whileHover={{ scale: 1.05 }}
           >
             <motion.span
-              className="text-2xl sm:text-4xl font-medium text-accent-olive"
+              className="text-2xl sm:text-4xl font-medium text-white"
               animate={{ opacity: [1, 0.7, 1] }}
               transition={{
                 duration: 0.5,
@@ -50,7 +50,7 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
             </motion.span>
           </motion.div>
           <motion.p
-            className="text-sm sm:text-base text-muted-foreground"
+            className="text-sm sm:text-base text-white"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}

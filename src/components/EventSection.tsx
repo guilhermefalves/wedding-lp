@@ -135,7 +135,8 @@ export function EventSection() {
             >
               Para nosso dia especial, gostaríamos de uma atmosfera elegante e
               harmoniosa. Sugerimos trajes esporte fino nas cores da nossa
-              paleta de inspiração.
+              paleta de inspiração, ou outra cor de sua preferência, exceto
+              verde-oliva, azul-marinho branco.
             </motion.p>
 
             <div className="flex flex-wrap justify-center gap-4">
