@@ -62,6 +62,12 @@ export const coupleInfo = {
   groom: "Guilherme",
 };
 
+// Informações do convite digital
+export const conviteInfo = {
+  redirectUrl: "/",
+  receptionTime: "16h30",
+};
+
 // Galeria de imagens
 export const galleryImages = [
   "imgs/gallery-01.jpg",
