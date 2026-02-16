@@ -28,9 +28,9 @@ const Envelope = ({ isOpen, showCard }: EnvelopeProps) => {
             style={{
               position: "absolute",
               inset: 0,
-              backgroundColor: "hsl(72 40% 30%)",
+              backgroundColor: "#5f6b2e",
               borderRadius: "47% 53% 52% 48% / 48% 46% 54% 52%",
-              boxShadow: "inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -2px 6px rgba(0,0,0,0.2), 0 3px 8px rgba(0,0,0,0.25)",
+              boxShadow: "inset 0 2px 4px #ffffff26, inset 0 -2px 6px #00000033, 0 3px 8px #00000040",
             }}
           />
           {/* Inner ring */}
@@ -39,7 +39,7 @@ const Envelope = ({ isOpen, showCard }: EnvelopeProps) => {
               position: "absolute",
               inset: "5px",
               borderRadius: "47% 53% 52% 48% / 48% 46% 54% 52%",
-              border: "1px solid rgba(250, 248, 241, 0.3)",
+              border: "1px solid #faf8f14d",
             }}
           />
           {/* Wedding logo */}
@@ -63,10 +63,10 @@ const Envelope = ({ isOpen, showCard }: EnvelopeProps) => {
           top: "0px",
           zIndex: showCard ? 50 : 5,
           pointerEvents: showCard ? "auto" : "none",
-          backgroundColor: "hsl(39 40% 88%)",
-          border: "1px solid hsla(43, 72%, 55%, 0.2)",
+          backgroundColor: "#ede4d4",
+          border: "1px solid #dfb03a33",
           borderRadius: "0.5rem 0.5rem 0 0",
-          boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+          boxShadow: "0 20px 25px -5px #0000001a, 0 8px 10px -6px #0000001a",
         }}
         initial={{ y: 0, height: 200, opacity: 0 }}
         animate={showCard ? { y: -340, height: 500, opacity: 1 } : { y: 0, height: 200, opacity: 0 }}
@@ -85,11 +85,11 @@ const Envelope = ({ isOpen, showCard }: EnvelopeProps) => {
         >
           {/* Names first */}
           <div style={{ marginTop: "1.25rem", marginBottom: "1.25rem" }}>
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "hsl(30 10% 20%)", fontSize: "2.25rem", lineHeight: 1.25 }}>
+            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#38332e", fontSize: "2.25rem", lineHeight: 1.25 }}>
               {coupleInfo.bride}
             </h1>
-            <p style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "hsl(43 72% 55%)", fontSize: "1.5rem", margin: "0.25rem 0" }}>&</p>
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "hsl(30 10% 20%)", fontSize: "2.25rem", lineHeight: 1.25 }}>
+            <p style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#dfb03a", fontSize: "1.5rem", margin: "0.25rem 0" }}>&</p>
+            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", color: "#38332e", fontSize: "2.25rem", lineHeight: 1.25 }}>
               {coupleInfo.groom}
             </h1>
           </div>
@@ -98,7 +98,7 @@ const Envelope = ({ isOpen, showCard }: EnvelopeProps) => {
           <p
             style={{
               fontFamily: "'Cormorant Garamond', Georgia, serif",
-              color: "hsl(30 10% 45%)",
+              color: "#7e7367",
               textTransform: "uppercase",
               fontSize: "0.875rem",
               lineHeight: "1.25rem",
@@ -112,19 +112,19 @@ const Envelope = ({ isOpen, showCard }: EnvelopeProps) => {
 
           {/* Date */}
           <div style={{ marginTop: "1.25rem", marginBottom: "1.25rem" }}>
-            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "hsl(30 10% 45%)", fontSize: "1.125rem", letterSpacing: "0.1em" }}>
+            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "#7e7367", fontSize: "1.125rem", letterSpacing: "0.1em" }}>
               {formattedDate}
             </p>
-            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "hsl(30 10% 45%)", fontSize: "1rem", marginTop: "0.25rem" }}>
+            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: "#7e7367", fontSize: "1rem", marginTop: "0.25rem" }}>
               às {conviteInfo.receptionTime}
             </p>
           </div>
 
           {/* Divider */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", margin: "0.75rem 0" }}>
-            <div style={{ width: "2.5rem", height: "1px", opacity: 0.5, backgroundColor: "hsl(43 72% 55%)" }} />
-            <div style={{ width: "0.375rem", height: "0.375rem", borderRadius: "9999px", opacity: 0.6, backgroundColor: "hsl(43 72% 55%)" }} />
-            <div style={{ width: "2.5rem", height: "1px", opacity: 0.5, backgroundColor: "hsl(43 72% 55%)" }} />
+            <div style={{ width: "2.5rem", height: "1px", opacity: 0.5, backgroundColor: "#dfb03a" }} />
+            <div style={{ width: "0.375rem", height: "0.375rem", borderRadius: "9999px", opacity: 0.6, backgroundColor: "#dfb03a" }} />
+            <div style={{ width: "2.5rem", height: "1px", opacity: 0.5, backgroundColor: "#dfb03a" }} />
           </div>
 
           {/* CTA Button */}
@@ -139,12 +139,12 @@ const Envelope = ({ isOpen, showCard }: EnvelopeProps) => {
               paddingRight: "2rem",
               fontSize: "1rem",
               fontFamily: "'Cormorant Garamond', Georgia, serif",
-              backgroundColor: "hsl(72 40% 30%)",
-              color: "hsl(40 33% 96%)",
+              backgroundColor: "#5f6b2e",
+              color: "#f8f6f1",
               letterSpacing: "0.15em",
               textTransform: "uppercase",
               borderRadius: "0.125rem",
-              boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+              boxShadow: "0 4px 6px -1px #0000001a, 0 2px 4px -2px #0000001a",
               textDecoration: "none",
               transition: "opacity 300ms",
             }}
@@ -163,8 +163,8 @@ const Envelope = ({ isOpen, showCard }: EnvelopeProps) => {
           inset: 0,
           borderRadius: "0.5rem",
           zIndex: showCard ? 15 : 20,
-          backgroundColor: "hsl(39 40% 88%)",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.08)",
+          backgroundColor: "#ede4d4",
+          boxShadow: "0 4px 20px #0000001f, 0 1px 4px #00000014",
         }}
       >
         <div style={{ position: "absolute", inset: 0, overflow: "hidden", borderRadius: "0.5rem" }}>
@@ -176,7 +176,7 @@ const Envelope = ({ isOpen, showCard }: EnvelopeProps) => {
               left: 0,
               right: 0,
               height: "120px",
-              background: "linear-gradient(to bottom, rgba(0,0,0,0.08), transparent)",
+              background: "linear-gradient(to bottom, #00000014, transparent)",
               clipPath: "polygon(0 0, 50% 100%, 100% 0)",
             }}
           />
@@ -187,7 +187,7 @@ const Envelope = ({ isOpen, showCard }: EnvelopeProps) => {
             inset: "3px",
             borderRadius: "0.5rem",
             opacity: 0.2,
-            border: "1px solid hsl(43 72% 55%)",
+            border: "1px solid #dfb03a",
           }}
         />
       </div>
@@ -212,7 +212,7 @@ const Envelope = ({ isOpen, showCard }: EnvelopeProps) => {
           style={{
             width: "100%",
             height: "100%",
-            backgroundColor: "hsl(39 38% 85%)",
+            backgroundColor: "#e7ddca",
             clipPath: "polygon(0 0, 50% 100%, 100% 0)",
             borderRadius: "8px 8px 0 0",
           }}
@@ -223,7 +223,7 @@ const Envelope = ({ isOpen, showCard }: EnvelopeProps) => {
               inset: 0,
               opacity: 0.3,
               clipPath: "polygon(2px 2px, 50% calc(100% - 2px), calc(100% - 2px) 2px)",
-              border: "1px solid hsl(43 72% 55%)",
+              border: "1px solid #dfb03a",
             }}
           />
         </div>
