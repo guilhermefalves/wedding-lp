@@ -3,8 +3,8 @@ import { motion } from "motion/react";
 import Envelope from "../components/Envelope";
 
 const COLORS = {
-  background: "rgb(180, 189, 158)",
-  primary: "hsl(72 40% 30%)",
+  background: "#b4bd9e",
+  primary: "#5f6b2e",
 };
 
 const Convite = () => {
