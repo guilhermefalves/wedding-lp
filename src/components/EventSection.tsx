@@ -1,14 +1,11 @@
-import { useId } from "react";
 import { motion } from "motion/react";
 import { MapPin, Calendar, Clock, Shirt } from "lucide-react";
 import { EventTimeline } from "./EventTimeline";
 import { colorPalette, weddingInfo } from "../config/constants";
 
 export function EventSection() {
-  const sectionId = useId();
-
   return (
-    <section id={sectionId} className="py-20 px-4 bg-neutral-dark/10">
+    <section id="festa" className="py-20 px-4 bg-neutral-dark/10">
       <div className="max-w-7xl mx-auto">
         <motion.div
           className="text-center mb-16"

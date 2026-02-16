@@ -1,12 +1,10 @@
-import { useId } from "react";
 import { motion } from "motion/react";
 import { Heart, Gift, ExternalLink } from "lucide-react";
 import { Button } from "./ui/button";
 
 export function GiftsSection() {
-  const sectionId = useId();
   return (
-    <section id={sectionId} className="py-20 px-4">
+    <section id="presentes" className="py-20 px-4">
       <div className="max-w-4xl mx-auto">
         <motion.div
           className="text-center mb-16"
