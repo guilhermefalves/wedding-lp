@@ -38,6 +38,7 @@ export function ImageGallery() {
               src={galleryImages[currentImage]}
               alt={`${coupleInfo.bride} e ${coupleInfo.groom} - galeria ${currentImage}`}
               className="w-full h-full object-cover"
+              loading="lazy"
             />
           </motion.div>
         </AnimatePresence>
