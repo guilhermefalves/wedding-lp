@@ -3,6 +3,7 @@ import { SpeedInsights } from '@vercel/speed-insights/react';
 import Home from "./pages/Home";
 import Convite from "./pages/Convite";
 import Photos from "./pages/Photos";
+import GalleryFull from "./pages/GalleryFull";
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
         <Route path="/convite" element={<Convite />} />
         <Route path="/photos" element={<Photos />} />
         <Route path="/fotos" element={<Photos />} />
+        <Route path="/galeria" element={<GalleryFull />} />
         <Route path="*" element={<Home />} />
       </Routes>
     </BrowserRouter>
