@@ -19,10 +19,11 @@ export default async function handler(
   }
 
   try {
+    const all = req.query.all === "true";
     const command = new ListObjectsV2Command({
       Bucket: BUCKET,
       Prefix: "wedding/",
-      MaxKeys: 4,
+      MaxKeys: all ? 200 : 4,
     });
 
     const data = await s3.send(command);
