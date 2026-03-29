@@ -1,10 +1,66 @@
 import { useEffect, useRef, useState } from "react";
-import { CloudUpload, X, Loader2 } from "lucide-react";
-import { motion } from "motion/react";
+import { CloudUpload, X, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { coupleInfo, weddingInfo } from "../config/constants";
 import { toast } from "sonner";
 import { ToasterProvider } from "../components/ToasterProvider";
 import { ImageGallery } from "../components/ImageGallery";
+
+const MAX_FILES = 5;
+
+function compressImage(file: File): Promise<File> {
+  return new Promise((resolve) => {
+    if (!file.type.startsWith("image/")) {
+      resolve(file);
+      return;
+    }
+
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+
+      const maxDim = 2048;
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        const ratio = Math.min(maxDim / width, maxDim / height);
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext("2d")!.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob(
+        (blob) => {
+          if (blob && blob.size < file.size) {
+            resolve(new File([blob], file.name, { type: "image/jpeg" }));
+          } else {
+            resolve(file);
+          }
+        },
+        "image/jpeg",
+        0.9,
+      );
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(file);
+    };
+    img.src = url;
+  });
+}
+
+function sanitizeName(str: string) {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9_-]/g, "_")
+    .replace(/_+/g, "_")
+    .substring(0, 60);
+}
 
 export default function Photos() {
   const formattedDate = weddingInfo.weddingDate.toLocaleDateString("pt-BR", {
@@ -18,8 +74,9 @@ export default function Photos() {
   const [previews, setPreviews] = useState<string[]>([]);
   const [name, setName] = useState(() => localStorage.getItem("photos_name") || "");
   const [uploading, setUploading] = useState(false);
-  const [gallery, setGallery] = useState<{ id: string; name: string; url: string }[]>([]);
+  const [gallery, setGallery] = useState<{ url: string }[]>([]);
   const [galleryLoading, setGalleryLoading] = useState(true);
+  const [previewIndex, setPreviewIndex] = useState(0);
 
   const fetchGallery = () => {
     setGalleryLoading(true);
@@ -39,10 +96,21 @@ export default function Photos() {
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    const validFiles = files.filter((f) => f.size <= 100 * 1024 * 1024);
-    setSelectedFiles((prev) => [...prev, ...validFiles]);
 
-    validFiles.forEach((file) => {
+    const remaining = MAX_FILES - selectedFiles.length;
+    if (remaining <= 0) {
+      toast.error(`Máximo de ${MAX_FILES} arquivos permitido.`);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    const toAdd = files.slice(0, remaining);
+    if (toAdd.length < files.length) {
+      toast.error(`Máximo de ${MAX_FILES} arquivos. ${files.length - toAdd.length} ignorado(s).`);
+    }
+
+    setSelectedFiles((prev) => [...prev, ...toAdd]);
+    toAdd.forEach((file) => {
       const url = URL.createObjectURL(file);
       setPreviews((prev) => [...prev, url]);
     });
@@ -54,6 +122,7 @@ export default function Photos() {
     URL.revokeObjectURL(previews[index]);
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
     setPreviews((prev) => prev.filter((_, i) => i !== index));
+    setPreviewIndex((prev: number) => Math.min(prev, Math.max(0, previews.length - 2)));
   };
 
   const handleSubmit = async () => {
@@ -63,16 +132,30 @@ export default function Photos() {
     let success = 0;
     let failed = 0;
 
+    const compressed = await Promise.all(selectedFiles.map(compressImage));
+
     const results = await Promise.allSettled(
-      selectedFiles.map(async (file: File) => {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("name", name.trim());
-        return fetch("/api/upload", { method: "POST", body: formData }).then(
-          (res) => {
-            if (!res.ok) throw new Error();
-          },
-        );
+      compressed.map(async (file: File) => {
+        const invertedTs = (9999999999999 - Date.now()).toString().padStart(13, "0");
+        const randomId = Math.random().toString(36).substring(2, 8);
+        const safeName = sanitizeName(name.trim());
+        const ext = file.name.split(".").pop() || "jpg";
+        const filename = `${invertedTs}_${safeName}_${randomId}.${ext}`;
+
+        const presignRes = await fetch("/api/presign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filename, contentType: file.type }),
+        });
+        if (!presignRes.ok) throw new Error();
+        const { url } = await presignRes.json();
+
+        const uploadRes = await fetch(url, {
+          method: "PUT",
+          headers: { "Content-Type": file.type },
+          body: file,
+        });
+        if (!uploadRes.ok) throw new Error();
       }),
     );
 
@@ -88,6 +171,7 @@ export default function Photos() {
       previews.forEach((u: string) => URL.revokeObjectURL(u));
       setSelectedFiles([]);
       setPreviews([]);
+      setPreviewIndex(0);
       fetchGallery();
     }
     if (failed > 0) {
@@ -203,29 +287,89 @@ export default function Photos() {
               className="uppercase"
               style={{ fontSize: "8px", color: "#8d9386", letterSpacing: "0.05em", marginTop: "4px" }}
             >
-              Fotos e Vídeos até 100MB
+              Fotos e Vídeos · Máx. 5 arquivos
             </p>
           </div>
 
-          {/* Selected files preview */}
-          {previews.length > 0 && (
-            <div className="grid grid-cols-3 gap-2 mb-4">
-              {previews.map((src, i) => (
-                <div key={i} className="relative aspect-square rounded-lg overflow-hidden" style={{ backgroundColor: "#1c1b1b" }}>
-                  {selectedFiles[i]?.type.startsWith("video/") ? (
-                    <video src={src} className="w-full h-full object-cover" />
-                  ) : (
-                    <img src={src} alt={`Selecionado ${i + 1}`} className="w-full h-full object-cover" />
-                  )}
-                  <button
-                    onClick={() => removeFile(i)}
-                    className="absolute top-1 right-1 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: "rgba(0,0,0,0.7)", padding: "2px" }}
+          {/* Selected files preview - single image */}
+          {previews.length === 1 && (
+            <div className="mb-4">
+              <div className="relative aspect-square rounded-lg overflow-hidden" style={{ backgroundColor: "#1c1b1b" }}>
+                {selectedFiles[0]?.type.startsWith("video/") ? (
+                  <video src={previews[0]} className="w-full h-full object-cover" />
+                ) : (
+                  <img src={previews[0]} alt="Selecionado 1" className="w-full h-full object-cover" />
+                )}
+                <button
+                  onClick={() => removeFile(0)}
+                  className="absolute top-1 right-1 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: "rgba(0,0,0,0.7)", padding: "2px" }}
+                >
+                  <X className="w-3.5 h-3.5" style={{ color: "#e5e2e1" }} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Selected files preview - slider for 2+ */}
+          {previews.length >= 2 && (
+            <div className="mb-4">
+              <div className="relative aspect-square rounded-lg overflow-hidden" style={{ backgroundColor: "#1c1b1b" }}>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={previewIndex}
+                    className="absolute inset-0"
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -50 }}
+                    transition={{ duration: 0.3 }}
                   >
-                    <X className="w-3.5 h-3.5" style={{ color: "#e5e2e1" }} />
-                  </button>
+                    {selectedFiles[previewIndex]?.type.startsWith("video/") ? (
+                      <video src={previews[previewIndex]} className="w-full h-full object-cover" />
+                    ) : (
+                      <img src={previews[previewIndex]} alt={`Selecionado ${previewIndex + 1}`} className="w-full h-full object-cover" />
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+
+                <button
+                  onClick={() => removeFile(previewIndex)}
+                  className="absolute top-1 right-1 rounded-full flex items-center justify-center z-10"
+                  style={{ backgroundColor: "rgba(0,0,0,0.7)", padding: "2px" }}
+                >
+                  <X className="w-3.5 h-3.5" style={{ color: "#e5e2e1" }} />
+                </button>
+
+                <button
+                  onClick={() => setPreviewIndex((prev: number) => (prev - 1 + previews.length) % previews.length)}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full z-10"
+                  style={{ backgroundColor: "rgba(0,0,0,0.6)", padding: "4px" }}
+                >
+                  <ChevronLeft className="w-4 h-4" style={{ color: "#e5e2e1" }} />
+                </button>
+
+                <button
+                  onClick={() => setPreviewIndex((prev: number) => (prev + 1) % previews.length)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full z-10"
+                  style={{ backgroundColor: "rgba(0,0,0,0.6)", padding: "4px" }}
+                >
+                  <ChevronRight className="w-4 h-4" style={{ color: "#e5e2e1" }} />
+                </button>
+
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                  {previews.map((_: string, i: number) => (
+                    <button
+                      key={i}
+                      onClick={() => setPreviewIndex(i)}
+                      className="w-1.5 h-1.5 rounded-full transition-colors"
+                      style={{ backgroundColor: i === previewIndex ? "#AAD493" : "rgba(255,255,255,0.4)" }}
+                    />
+                  ))}
                 </div>
-              ))}
+              </div>
+              <p className="text-center mt-2" style={{ fontSize: "11px", color: "#8d9386" }}>
+                {previewIndex + 1} / {previews.length}
+              </p>
             </div>
           )}
 
