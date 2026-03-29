@@ -2,10 +2,5 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/" }
-  ],
-  "functions": {
-    "api/upload.ts": {
-      "maxDuration": 60
-    }
-  }
+  ]
 }
