@@ -1,8 +1,10 @@
-import { useRef, useState } from "react";
-import { CloudUpload, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { CloudUpload, X, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { coupleInfo, weddingInfo } from "../config/constants";
 import { ImageGallery } from "../components/ImageGallery";
+import { toast } from "sonner";
+import { ToasterProvider } from "../components/ToasterProvider";
 
 export default function Photos() {
   const formattedDate = weddingInfo.weddingDate.toLocaleDateString("pt-BR", {
@@ -14,6 +16,14 @@ export default function Photos() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [name, setName] = useState(() => localStorage.getItem("photos_name") || "");
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      previews.forEach((u: string) => URL.revokeObjectURL(u));
+    };
+  }, []);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -34,6 +44,46 @@ export default function Photos() {
     setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleSubmit = async () => {
+    if (selectedFiles.length === 0 || !name.trim()) return;
+
+    setUploading(true);
+    let success = 0;
+    let failed = 0;
+
+    const results = await Promise.allSettled(
+      selectedFiles.map(async (file: File) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("name", name.trim());
+        return fetch("/api/upload", { method: "POST", body: formData }).then(
+          (res) => {
+            if (!res.ok) throw new Error();
+          },
+        );
+      }),
+    );
+
+    for (const r of results) {
+      if (r.status === "fulfilled") success++;
+      else failed++;
+    }
+
+    setUploading(false);
+
+    if (success > 0) {
+      toast.success(`${success} arquivo(s) enviado(s) com sucesso!`);
+      previews.forEach((url) => URL.revokeObjectURL(url));
+      setSelectedFiles([]);
+      setPreviews([]);
+    }
+    if (failed > 0) {
+      toast.error(`${failed} arquivo(s) falharam no envio.`);
+    }
+  };
+
+  const canSubmit = selectedFiles.length > 0 && name.trim().length > 0 && !uploading;
+
   return (
     <div
       className="min-h-screen antialiased"
@@ -45,7 +95,7 @@ export default function Photos() {
     >
       <main className="pb-12 px-6 pt-12 max-w-[375px] mx-auto min-h-screen">
         {/* Hero Section - compact version of HeroSection */}
-        <section className="text-center mb-6">
+        <section className="text-center pt-4 mb-6">
           <motion.div
             className="mb-3"
             initial={{ opacity: 0, y: 20 }}
@@ -184,6 +234,11 @@ export default function Photos() {
               <input
                 type="text"
                 required
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  localStorage.setItem("photos_name", e.target.value);
+                }}
                 className="w-full border-none rounded-lg focus:ring-1 transition-all"
                 style={{
                   backgroundColor: "#0e0e0e",
@@ -194,48 +249,25 @@ export default function Photos() {
                 placeholder="Como quer ser identificado?"
               />
             </div>
-            <div>
-              <label
-                className="block uppercase"
-                style={{
-                  fontSize: "9px",
-                  letterSpacing: "0.1em",
-                  color: "#e1c299",
-                  marginBottom: "6px",
-                  marginLeft: "4px",
-                }}
-              >
-                Legenda (Opcional)
-              </label>
-              <textarea
-                className="w-full border-none rounded-lg focus:ring-1 transition-all resize-none"
-                style={{
-                  backgroundColor: "#0e0e0e",
-                  color: "#e5e2e1",
-                  padding: "10px 16px",
-                  fontSize: "14px",
-                }}
-                placeholder="Escreva uma mensagem..."
-                rows={2}
-              />
-            </div>
           </div>
 
           {/* Actions */}
           <div style={{ marginTop: "20px" }}>
             <button
-              className="w-full rounded-lg shadow-lg uppercase"
+              className="w-full rounded-lg shadow-lg uppercase flex items-center justify-center gap-2"
               style={{
                 padding: "14px",
-                backgroundColor: selectedFiles.length > 0 ? "rgba(143,184,122,0.7)" : "rgba(143,184,122,0.5)",
+                backgroundColor: canSubmit ? "rgba(143,184,122,0.7)" : "rgba(143,184,122,0.5)",
                 color: "#e5e2e1",
                 fontSize: "10px",
                 letterSpacing: "0.15rem",
-                cursor: selectedFiles.length > 0 ? "pointer" : "not-allowed",
+                cursor: canSubmit ? "pointer" : "not-allowed",
               }}
-              disabled={selectedFiles.length === 0}
+              disabled={!canSubmit}
+              onClick={handleSubmit}
             >
-              Enviar para o álbum
+              {uploading && <Loader2 className="w-4 h-4 animate-spin" />}
+              {uploading ? "Enviando..." : "Enviar para o álbum"}
             </button>
           </div>
         </div>
@@ -251,6 +283,7 @@ export default function Photos() {
           <ImageGallery />
         </section>
       </main>
+      <ToasterProvider />
     </div>
   );
 }
