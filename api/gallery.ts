@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getDriveClient, FOLDER_ID, setCors } from "./_drive";
+import { ListObjectsV2Command } from "@aws-sdk/client-s3";
+import { s3, BUCKET, setCors } from "./_s3";
 
 export default async function handler(
   req: VercelRequest,
@@ -18,25 +19,25 @@ export default async function handler(
   }
 
   try {
-    const drive = await getDriveClient();
-    const response = await drive.files.list({
-      q: `'${FOLDER_ID}' in parents and trashed = false and (mimeType contains 'image/' or mimeType contains 'video/')`,
-      orderBy: "createdTime desc",
-      pageSize: 4,
-      fields: "files(id,name)",
-      supportsAllDrives: true,
-      includeItemsFromAllDrives: true,
+    const command = new ListObjectsV2Command({
+      Bucket: BUCKET,
+      Prefix: "wedding/",
+      MaxKeys: 4,
     });
 
-    const files = (response.data.files || []).map((f) => ({
-      id: f.id,
-      name: f.name,
-      url: `/api/image?id=${f.id}`,
-    }));
+    const data = await s3.send(command);
+    const region = process.env.AWS_REGION || "sa-east-1";
 
+    const files = (data.Contents || [])
+      .filter((obj) => obj.Key && !obj.Key.endsWith("/"))
+      .map((obj) => ({
+        url: `https://${BUCKET}.s3.${region}.amazonaws.com/${obj.Key}`,
+      }));
+
+    res.setHeader("Cache-Control", "public, s-maxage=30");
     res.status(200).json({ files });
   } catch (err) {
-    console.error("Drive list error:", err);
+    console.error("Gallery error:", err);
     res.status(500).json({ error: "Erro ao buscar galeria" });
   }
 }
