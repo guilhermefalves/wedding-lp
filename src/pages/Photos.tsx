@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CloudUpload, Trash2, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { CloudUpload, Trash2, Loader2, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { coupleInfo, weddingInfo } from "../config/constants";
 import { toast } from "sonner";
@@ -79,6 +79,7 @@ export default function Photos() {
   const [galleryLoading, setGalleryLoading] = useState(true);
   const [previewIndex, setPreviewIndex] = useState(0);
   const [nameError, setNameError] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({ done: 0, total: 0 });
 
   const fetchGallery = () => {
     setGalleryLoading(true);
@@ -141,6 +142,7 @@ export default function Photos() {
     let failed = 0;
 
     const compressed = await Promise.all(selectedFiles.map(compressImage));
+    setUploadProgress({ done: 0, total: compressed.length });
 
     const results = await Promise.allSettled(
       compressed.map(async (file: File) => {
@@ -164,6 +166,7 @@ export default function Photos() {
           body: file,
         });
         if (!uploadRes.ok) throw new Error();
+        setUploadProgress((prev: { done: number; total: number }) => ({ ...prev, done: prev.done + 1 }));
       }),
     );
 
@@ -173,6 +176,7 @@ export default function Photos() {
     }
 
     setUploading(false);
+    setUploadProgress({ done: 0, total: 0 });
 
     if (success > 0) {
       toast.success(`${success} arquivo(s) enviado(s) com sucesso!`);
@@ -276,6 +280,43 @@ export default function Photos() {
             onChange={handleFileSelect}
           />
 
+          {/* Name field (above upload) */}
+          <div style={{ marginBottom: "16px" }}>
+            <label
+              className="block uppercase"
+              style={{
+                fontSize: "9px",
+                letterSpacing: "0.1em",
+                color: "#e1c299",
+                marginBottom: "6px",
+                marginLeft: "4px",
+              }}
+            >
+              Seu Nome (Obrigatório)
+            </label>
+            <input
+              ref={nameInputRef}
+              type="text"
+              required
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (e.target.value.trim()) setNameError(false);
+                localStorage.setItem("photos_name", e.target.value);
+              }}
+              className="w-full rounded-lg focus:ring-1 transition-all outline-none"
+              style={{
+                backgroundColor: "#0e0e0e",
+                color: "#e5e2e1",
+                padding: "10px 16px",
+                fontSize: "14px",
+                border: "none",
+                boxShadow: nameError ? "0 0 0 2.5px #e57373" : "none",
+              }}
+              placeholder="Digite seu nome"
+            />
+          </div>
+
           {/* Upload Zone */}
           {selectedFiles.length === 0 && (
             <div
@@ -365,82 +406,71 @@ export default function Photos() {
                 >
                   <ChevronRight className="w-4 h-4" style={{ color: "#e5e2e1" }} />
                 </button>
-
-                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-                  {previews.map((_: string, i: number) => (
-                    <button
-                      key={i}
-                      onClick={() => setPreviewIndex(i)}
-                      className="w-1.5 h-1.5 rounded-full transition-colors"
-                      style={{ backgroundColor: i === previewIndex ? "#AAD493" : "rgba(255,255,255,0.4)" }}
-                    />
-                  ))}
-                </div>
               </div>
-              <p className="text-center mt-2" style={{ fontSize: "11px", color: "#8d9386" }}>
-                {previewIndex + 1} / {previews.length}
-              </p>
+
+              {/* Thumbnail strip */}
+              <div className="flex gap-2 mt-3 justify-center">
+                {previews.map((src: string, i: number) => (
+                  <button
+                    key={i}
+                    onClick={() => setPreviewIndex(i)}
+                    className="rounded-md overflow-hidden transition-all"
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      flexShrink: 0,
+                      border: i === previewIndex ? "2px solid #AAD493" : "2px solid transparent",
+                      opacity: i === previewIndex ? 1 : 0.5,
+                    }}
+                  >
+                    {selectedFiles[i]?.type.startsWith("video/") ? (
+                      <video src={src} className="w-full h-full object-cover" />
+                    ) : (
+                      <img src={src} alt={`Thumb ${i + 1}`} className="w-full h-full object-cover" />
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
-          {/* Fields */}
-          <div className="space-y-4">
-            <div>
-              <label
-                className="block uppercase"
-                style={{
-                  fontSize: "9px",
-                  letterSpacing: "0.1em",
-                  color: "#e1c299",
-                  marginBottom: "6px",
-                  marginLeft: "4px",
-                }}
-              >
-                Seu Nome (Obrigatório)
-              </label>
-              <input
-                ref={nameInputRef}
-                type="text"
-                required
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                  if (e.target.value.trim()) setNameError(false);
-                  localStorage.setItem("photos_name", e.target.value);
-                }}
-                className="w-full rounded-lg focus:ring-1 transition-all outline-none"
-                style={{
-                  backgroundColor: "#0e0e0e",
-                  color: "#e5e2e1",
-                  padding: "10px 16px",
-                  fontSize: "14px",
-                  border: "none",
-                  boxShadow: nameError ? "0 0 0 2.5px #e57373" : "none",
-                }}
-                placeholder="Digite seu nome"
-              />
-            </div>
-          </div>
-
           {/* Actions */}
-          <div style={{ marginTop: "20px" }}>
-            <button
-              className="w-full rounded-lg shadow-lg uppercase flex items-center justify-center gap-2"
-              style={{
-                padding: "14px",
-                backgroundColor: canSubmit ? "rgba(143,184,122,0.7)" : "rgba(143,184,122,0.5)",
-                color: "#e5e2e1",
-                fontSize: "10px",
-                letterSpacing: "0.15rem",
-                cursor: canSubmit ? "pointer" : "not-allowed",
-              }}
-              disabled={!canSubmit}
-              onClick={handleSubmit}
-            >
-              {uploading && <Loader2 className="w-4 h-4 animate-spin" />}
-              {uploading ? "Enviando..." : "Enviar para o álbum"}
-            </button>
-          </div>
+          {selectedFiles.length > 0 && (
+            <div style={{ marginTop: "20px", display: "flex", gap: "8px" }}>
+              <button
+                className="flex-1 rounded-lg shadow-lg uppercase flex items-center justify-center gap-2"
+                style={{
+                  padding: "14px",
+                  backgroundColor: canSubmit ? "rgba(143,184,122,0.7)" : "rgba(143,184,122,0.5)",
+                  color: "#e5e2e1",
+                  fontSize: "10px",
+                  letterSpacing: "0.15rem",
+                  cursor: canSubmit ? "pointer" : "not-allowed",
+                }}
+                disabled={!canSubmit}
+                onClick={handleSubmit}
+              >
+                {uploading && <Loader2 className="w-4 h-4 animate-spin" />}
+                {uploading
+                  ? `Enviando ${uploadProgress.done}/${uploadProgress.total}...`
+                  : "Enviar para o álbum"}
+              </button>
+              {selectedFiles.length < MAX_FILES && (
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="rounded-lg flex items-center justify-center active:scale-[0.95] transition-all"
+                  style={{
+                    padding: "14px",
+                    backgroundColor: "#1c1b1b",
+                    border: "1px dashed rgba(67,73,62,0.3)",
+                    color: "#AAD493",
+                  }}
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Gallery Section */}
@@ -462,6 +492,7 @@ export default function Photos() {
           ) : (
             <ImageGallery images={gallery.map((item) => item.url)} />
           )}
+          <div style={{ height: "32px" }} />
         </section>
       </main>
       <ToasterProvider />
