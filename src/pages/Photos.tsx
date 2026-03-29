@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { CloudUpload, X, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { coupleInfo, weddingInfo } from "../config/constants";
-import { ImageGallery } from "../components/ImageGallery";
 import { toast } from "sonner";
 import { ToasterProvider } from "../components/ToasterProvider";
+import { ImageGallery } from "../components/ImageGallery";
 
 export default function Photos() {
   const formattedDate = weddingInfo.weddingDate.toLocaleDateString("pt-BR", {
@@ -18,8 +18,20 @@ export default function Photos() {
   const [previews, setPreviews] = useState<string[]>([]);
   const [name, setName] = useState(() => localStorage.getItem("photos_name") || "");
   const [uploading, setUploading] = useState(false);
+  const [gallery, setGallery] = useState<{ id: string; name: string; url: string }[]>([]);
+  const [galleryLoading, setGalleryLoading] = useState(true);
+
+  const fetchGallery = () => {
+    setGalleryLoading(true);
+    fetch("/api/gallery")
+      .then((res) => res.json())
+      .then((data) => setGallery(data.files || []))
+      .catch(() => setGallery([]))
+      .finally(() => setGalleryLoading(false));
+  };
 
   useEffect(() => {
+    fetchGallery();
     return () => {
       previews.forEach((u: string) => URL.revokeObjectURL(u));
     };
@@ -73,9 +85,10 @@ export default function Photos() {
 
     if (success > 0) {
       toast.success(`${success} arquivo(s) enviado(s) com sucesso!`);
-      previews.forEach((url) => URL.revokeObjectURL(url));
+      previews.forEach((u: string) => URL.revokeObjectURL(u));
       setSelectedFiles([]);
       setPreviews([]);
+      fetchGallery();
     }
     if (failed > 0) {
       toast.error(`${failed} arquivo(s) falharam no envio.`);
@@ -274,13 +287,23 @@ export default function Photos() {
 
         {/* Gallery Section */}
         <section>
-          <div className="flex items-center mb-4">
+          <div className="flex items-center mb-8">
             <span className="font-display" style={{ fontSize: "16px", color: "#e5e2e1", lineHeight: 1.4 }}>
               Memórias recentes
             </span>
             <span className="flex-grow ml-4" style={{ height: "1px", backgroundColor: "rgba(67,73,62,0.2)" }} />
           </div>
-          <ImageGallery />
+          {galleryLoading ? (
+            <div className="flex justify-center pt-6">
+              <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#AAD493" }} />
+            </div>
+          ) : gallery.length === 0 ? (
+            <p className="text-center py-8" style={{ fontSize: "13px", color: "#8d9386" }}>
+              Nenhuma foto enviada ainda. Seja o primeiro!
+            </p>
+          ) : (
+            <ImageGallery images={gallery.map((item) => item.url)} />
+          )}
         </section>
       </main>
       <ToasterProvider />

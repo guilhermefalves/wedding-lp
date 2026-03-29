@@ -20,10 +20,10 @@ export default async function handler(
   try {
     const drive = await getDriveClient();
     const response = await drive.files.list({
-      q: `'${FOLDER_ID}' in parents and trashed = false and mimeType contains 'image/'`,
+      q: `'${FOLDER_ID}' in parents and trashed = false and (mimeType contains 'image/' or mimeType contains 'video/')`,
       orderBy: "createdTime desc",
-      pageSize: 5,
-      fields: "files(id,name,thumbnailLink)",
+      pageSize: 4,
+      fields: "files(id,name)",
       supportsAllDrives: true,
       includeItemsFromAllDrives: true,
     });
@@ -31,7 +31,7 @@ export default async function handler(
     const files = (response.data.files || []).map((f) => ({
       id: f.id,
       name: f.name,
-      thumbnail: f.thumbnailLink,
+      url: `/api/image?id=${f.id}`,
     }));
 
     res.status(200).json({ files });

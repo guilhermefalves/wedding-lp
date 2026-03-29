@@ -3,18 +3,25 @@ import { motion, AnimatePresence } from "motion/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { coupleInfo, galleryImages } from "../config/constants";
 
-export function ImageGallery() {
+interface ImageGalleryProps {
+  images?: string[];
+}
+
+export function ImageGallery({ images }: ImageGalleryProps) {
   const [currentImage, setCurrentImage] = useState(0);
+  const source = images && images.length > 0 ? images : galleryImages;
 
   const nextImage = () => {
-    setCurrentImage((prev) => (prev + 1) % galleryImages.length);
+    setCurrentImage((prev) => (prev + 1) % source.length);
   };
 
   const prevImage = () => {
     setCurrentImage(
-      (prev) => (prev - 1 + galleryImages.length) % galleryImages.length,
+      (prev) => (prev - 1 + source.length) % source.length,
     );
   };
+
+  if (source.length === 0) return null;
 
   return (
     <motion.div
@@ -35,7 +42,7 @@ export function ImageGallery() {
             transition={{ duration: 0.5 }}
           >
             <img
-              src={galleryImages[currentImage]}
+              src={source[currentImage]}
               alt={`${coupleInfo.bride} e ${coupleInfo.groom} - galeria ${currentImage}`}
               className="w-full h-full object-cover"
               loading="lazy"
@@ -75,7 +82,7 @@ export function ImageGallery() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
         >
-          {galleryImages.map((image, index) => (
+          {source.map((image, index) => (
             <motion.button
               key={`gallery-dot-${image}`}
               onClick={() => setCurrentImage(index)}
