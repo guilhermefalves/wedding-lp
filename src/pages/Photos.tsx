@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CloudUpload, X, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { CloudUpload, Trash2, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { coupleInfo, weddingInfo } from "../config/constants";
 import { toast } from "sonner";
@@ -70,6 +70,7 @@ export default function Photos() {
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [name, setName] = useState(() => localStorage.getItem("photos_name") || "");
@@ -77,6 +78,7 @@ export default function Photos() {
   const [gallery, setGallery] = useState<{ url: string }[]>([]);
   const [galleryLoading, setGalleryLoading] = useState(true);
   const [previewIndex, setPreviewIndex] = useState(0);
+  const [nameError, setNameError] = useState(false);
 
   const fetchGallery = () => {
     setGalleryLoading(true);
@@ -126,7 +128,13 @@ export default function Photos() {
   };
 
   const handleSubmit = async () => {
-    if (selectedFiles.length === 0 || !name.trim()) return;
+    if (!name.trim()) {
+      setNameError(true);
+      nameInputRef.current?.focus();
+      toast.error("Preencha seu nome antes de enviar.");
+      return;
+    }
+    if (selectedFiles.length === 0) return;
 
     setUploading(true);
     let success = 0;
@@ -179,7 +187,7 @@ export default function Photos() {
     }
   };
 
-  const canSubmit = selectedFiles.length > 0 && name.trim().length > 0 && !uploading;
+  const canSubmit = selectedFiles.length > 0 && !uploading;
 
   return (
     <div
@@ -269,27 +277,29 @@ export default function Photos() {
           />
 
           {/* Upload Zone */}
-          <div
-            className="rounded-lg flex flex-col items-center justify-center text-center active:scale-[0.98] transition-all duration-300 cursor-pointer"
-            style={{
-              border: "1px dashed rgba(67,73,62,0.3)",
-              backgroundColor: "#1c1b1b",
-              padding: "16px",
-              marginBottom: "16px",
-            }}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <CloudUpload className="w-8 h-8 mb-2" style={{ color: "#AAD493" }} />
-            <p style={{ fontFamily: "'Noto Serif', serif", fontSize: "16px", color: "#e5e2e1", lineHeight: 1.4 }}>
-              Toque para selecionar mídias
-            </p>
-            <p
-              className="uppercase"
-              style={{ fontSize: "8px", color: "#8d9386", letterSpacing: "0.05em", marginTop: "4px" }}
+          {selectedFiles.length === 0 && (
+            <div
+              className="rounded-lg flex flex-col items-center justify-center text-center active:scale-[0.98] transition-all duration-300 cursor-pointer"
+              style={{
+                border: "1px dashed rgba(67,73,62,0.3)",
+                backgroundColor: "#1c1b1b",
+                padding: "16px",
+                marginBottom: "16px",
+              }}
+              onClick={() => fileInputRef.current?.click()}
             >
-              Fotos e Vídeos · Máx. 5 arquivos
-            </p>
-          </div>
+              <CloudUpload className="w-8 h-8 mb-2" style={{ color: "#AAD493" }} />
+              <p style={{ fontFamily: "'Noto Serif', serif", fontSize: "16px", color: "#e5e2e1", lineHeight: 1.4 }}>
+                Toque para selecionar mídias
+              </p>
+              <p
+                className="uppercase"
+                style={{ fontSize: "8px", color: "#8d9386", letterSpacing: "0.05em", marginTop: "4px" }}
+              >
+                Fotos e Vídeos · Máx. 5 arquivos
+              </p>
+            </div>
+          )}
 
           {/* Selected files preview - single image */}
           {previews.length === 1 && (
@@ -305,7 +315,7 @@ export default function Photos() {
                   className="absolute top-1 right-1 rounded-full flex items-center justify-center"
                   style={{ backgroundColor: "rgba(0,0,0,0.7)", padding: "2px" }}
                 >
-                  <X className="w-3.5 h-3.5" style={{ color: "#e5e2e1" }} />
+                  <Trash2 className="w-3.5 h-3.5" style={{ color: "#e5e2e1" }} />
                 </button>
               </div>
             </div>
@@ -337,7 +347,7 @@ export default function Photos() {
                   className="absolute top-1 right-1 rounded-full flex items-center justify-center z-10"
                   style={{ backgroundColor: "rgba(0,0,0,0.7)", padding: "2px" }}
                 >
-                  <X className="w-3.5 h-3.5" style={{ color: "#e5e2e1" }} />
+                  <Trash2 className="w-3.5 h-3.5" style={{ color: "#e5e2e1" }} />
                 </button>
 
                 <button
@@ -389,21 +399,25 @@ export default function Photos() {
                 Seu Nome (Obrigatório)
               </label>
               <input
+                ref={nameInputRef}
                 type="text"
                 required
                 value={name}
                 onChange={(e) => {
                   setName(e.target.value);
+                  if (e.target.value.trim()) setNameError(false);
                   localStorage.setItem("photos_name", e.target.value);
                 }}
-                className="w-full border-none rounded-lg focus:ring-1 transition-all"
+                className="w-full rounded-lg focus:ring-1 transition-all outline-none"
                 style={{
                   backgroundColor: "#0e0e0e",
                   color: "#e5e2e1",
                   padding: "10px 16px",
                   fontSize: "14px",
+                  border: "none",
+                  boxShadow: nameError ? "0 0 0 2.5px #e57373" : "none",
                 }}
-                placeholder="Como quer ser identificado?"
+                placeholder="Digite seu nome"
               />
             </div>
           </div>
