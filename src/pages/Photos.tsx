@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { coupleInfo, weddingInfo } from "../config/constants";
 import { toast } from "sonner";
 import { ToasterProvider } from "../components/ToasterProvider";
+import { Link } from "react-router-dom";
 import { ImageGallery } from "../components/ImageGallery";
 
 const MAX_FILES = 5;
@@ -477,7 +478,7 @@ export default function Photos() {
         <section>
           <div className="flex items-center mb-8">
             <span className="font-display" style={{ fontSize: "16px", color: "#e5e2e1", lineHeight: 1.4 }}>
-              Memórias recentes
+              Registros do dia
             </span>
             <span className="flex-grow ml-4" style={{ height: "1px", backgroundColor: "rgba(67,73,62,0.2)" }} />
           </div>
@@ -491,6 +492,15 @@ export default function Photos() {
             </p>
           ) : (
             <ImageGallery images={gallery.map((item) => item.url)} />
+          )}
+          {gallery.length > 0 && (
+            <Link
+              to="/galeria"
+              className="block text-center mt-4"
+              style={{ fontSize: "13px", color: "#AAD493" }}
+            >
+              Ver todas
+            </Link>
           )}
           <div style={{ height: "32px" }} />
         </section>
