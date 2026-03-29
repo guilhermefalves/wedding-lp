@@ -9,6 +9,7 @@ export default function App() {
       <Routes>
         <Route path="/convite" element={<Convite />} />
         <Route path="/photos" element={<Photos />} />
+        <Route path="/fotos" element={<Photos />} />
         <Route path="*" element={<Home />} />
       </Routes>
     </BrowserRouter>
