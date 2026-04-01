@@ -116,7 +116,7 @@ export default function GalleryFull() {
           >
             <button
               className="absolute top-4 right-4 z-10 rounded-full"
-              style={{ backgroundColor: "rgba(255,255,255,0.1)", padding: "8px" }}
+              style={{ backgroundColor: "rgba(0,0,0,0.4)", padding: "8px", boxShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
               onClick={closeLightbox}
             >
               <X className="w-6 h-6" style={{ color: "#e5e2e1" }} />
@@ -124,7 +124,7 @@ export default function GalleryFull() {
 
             <button
               className="absolute left-0 top-1/2 -translate-y-1/2 z-10 rounded-full"
-              style={{ backgroundColor: "rgba(255,255,255,0.1)", padding: "8px" }}
+              style={{ backgroundColor: "rgba(0,0,0,0.4)", padding: "8px", boxShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
               onClick={(e) => {
                 e.stopPropagation();
                 prevImage();
@@ -135,7 +135,7 @@ export default function GalleryFull() {
 
             <button
               className="absolute right-3 top-1/2 -translate-y-1/2 z-10 rounded-full"
-              style={{ backgroundColor: "rgba(255,255,255,0.1)", padding: "8px" }}
+              style={{ backgroundColor: "rgba(0,0,0,0.4)", padding: "8px", boxShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
               onClick={(e) => {
                 e.stopPropagation();
                 nextImage();
