@@ -123,7 +123,7 @@ export default function GalleryFull() {
             </button>
 
             <button
-              className="absolute left-3 top-1/2 -translate-y-1/2 z-10 rounded-full"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 rounded-full"
               style={{ backgroundColor: "rgba(255,255,255,0.1)", padding: "8px" }}
               onClick={(e) => {
                 e.stopPropagation();
